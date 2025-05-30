@@ -1,4 +1,4 @@
-from Esercizio_studente_impiegato import Persona
+from Persona import Persona
 
 class PosizioneMilitare:
 

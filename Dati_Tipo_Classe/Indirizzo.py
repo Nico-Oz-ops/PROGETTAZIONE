@@ -13,7 +13,7 @@ class Indirizzo:
 		
 		self._via:str = via
 
-		if not re.search("^[0-9]+[a-zA-Z]*$", civico):
+		if not re.fullmatch(r"^[0-9]+[a-zA-Z]*$", civico):
 			raise ValueError(f"value for civico '{civico}' not allowed")
 		self._civico:str = civico
 	

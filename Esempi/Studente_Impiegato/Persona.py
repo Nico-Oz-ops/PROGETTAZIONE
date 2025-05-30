@@ -122,5 +122,3 @@ class Persona(ABC):
 # # creazione dell'oggetto Persona
 # p = Persona("Nico", "Ro", data_nascita, codice_fiscale)
 # print(p)
-
-

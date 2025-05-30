@@ -1,6 +1,6 @@
-from Esercizio_studente_impiegato import CodiceFiscale
-from Esercizio_studente_impiegato import DataNascita
-from Esercizio_studente_impiegato import Persona
+from Persona import CodiceFiscale
+from Persona import DataNascita
+from Persona import Persona
 from Uomo_Donna import Uomo
 from Uomo_Donna import Donna
 from Uomo_Donna import PosizioneMilitare
@@ -12,7 +12,7 @@ from Studente_Impiegato import Progettista
 from Studente_Impiegato import Progetto
 
 def test_creazione_persona():
-    cod_fisc = CodiceFiscale("LZFSVT43D05H130Cshdfkhskdfhsdlfh")
+    cod_fisc = CodiceFiscale("LZFSVT43D05H130C")
     data_nascita = DataNascita("29/08/1986")
     posizione_militare = PosizioneMilitare("Esente")
 
