@@ -41,6 +41,6 @@ class Insegnamento:
     
     def getCodice(self) -> str:
         return self._codice
-    def getInsegnCdl(self) -> FrozenSet[CorsoDiLaurea]:  # type: ignore
+    def getInsegnCdl(self) -> FrozenSet[CorsoDiLaurea]:
         return frozenset(self._insegn_cdl)
         

@@ -1,4 +1,4 @@
-from CorsoDiLaurea import CorsoDiLaurea
+from CorsoDiLaurea import *
 from typing import FrozenSet
 
 
@@ -23,6 +23,6 @@ class TipoCorsoDiLaurea:
     def getNome(self) -> str:
         return self._nome
     
-    def getCdlTipo(self) -> FrozenSet[CorsoDiLaurea]: # type: ignore
+    def getCdlTipo(self) -> FrozenSet[CorsoDiLaurea]:
         return frozenset(self._cdl_tipo)
         
