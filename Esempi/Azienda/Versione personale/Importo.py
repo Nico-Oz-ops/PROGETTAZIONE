@@ -18,36 +18,15 @@ class Telefono(str):
         return super().__new__(cls, v)
 
 class Dipartimento:
-    pass
-
-class afferenza:
-    impiegato: Impiegato
-    dipartimento: Dipartimento
-    data_afferenza: datetime.date
-
-    def impiegato(self):
-        return self.impiegato
-    
-    def dipartimento(self):
-        return self.dipartimento
-    
-    def data_afferenza(self):
-        return self.data_afferenza
-    
-    def __init__(self, impiegato, dipartimento, data_afferenza):
-    
-    def __hash__(self):
-        pass
-    
-    def __eq__(self, value):
-        pass
+    _nome: str
+    _telefono: Telefono
 
 class Impiegato:
     _nome: str
     _cognome: str
     _nascita: datetime.date
     _stipendio: Importo
-    _afferenza: afferenza
+    _afferenza: Dipartimento
 
     def nome(self) -> str:
         return self._nome
@@ -82,4 +61,5 @@ class Impiegato:
         self.set_cognome(cognome)
         self.set_stipendio(stipendio)
         self._nascita = nascita
+    
 

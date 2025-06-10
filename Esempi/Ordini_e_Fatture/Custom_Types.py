@@ -1,5 +1,5 @@
 import re
-from typing import Self
+from typing import *
 from datetime import date
 from enum import *
 

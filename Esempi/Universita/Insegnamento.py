@@ -1,4 +1,4 @@
-from typing import FrozenSet
+from typing import *
 from Custom_Types import *
 from CorsoDiLaurea import CorsoDiLaurea
 
@@ -41,6 +41,7 @@ class Insegnamento:
     
     def getCodice(self) -> str:
         return self._codice
-    def getInsegnCdl(self) -> FrozenSet[CorsoDiLaurea]:
+    
+    def getInsegnCdl(self) -> frozenset[CorsoDiLaurea]:
         return frozenset(self._insegn_cdl)
         

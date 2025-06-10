@@ -1,5 +1,6 @@
 from CorsoDiLaurea import *
-from typing import FrozenSet
+from typing import *
+from __future__ import annotations
 
 
 class TipoCorsoDiLaurea:
@@ -23,6 +24,6 @@ class TipoCorsoDiLaurea:
     def getNome(self) -> str:
         return self._nome
     
-    def getCdlTipo(self) -> FrozenSet[CorsoDiLaurea]:
+    def getCdlTipo(self) -> frozenset[CorsoDiLaurea]:
         return frozenset(self._cdl_tipo)
         
