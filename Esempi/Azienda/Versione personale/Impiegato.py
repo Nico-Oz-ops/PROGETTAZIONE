@@ -14,12 +14,28 @@ class Impiegato:
         self.set_cognome(cognome)
         self.nascita = nascita
         self.set_stipendio(stipendio)
-        self.set_dipartimento(dipartimento_aff, data_afferenza)
+        self.set_link_afferenza(dipartimento_aff, data_afferenza)
 
+    def set_link_afferenza(self, dipartimento_aff: Dipartimento | None = None, data_afferenza: date | None=None) -> None:
         if (dipartimento_aff is None) != (data_afferenza is None):
             raise ValueError("Dipartimento e data di afferenza devono essere entrambi None o entrambi non None")
-        self.set_dipartimento(dipartimento_aff)
-        self._set_data_afferenza(data_afferenza)
+
+
+        # Se afferiva a un dipartimento, devo rimuoverlo da esso
+        try:
+            if self.get_link_afferenza():
+                self.get_link_afferenza().dipartimento()._remove_impiegato(self.get_link_afferenza())
+        except AttributeError:  # il campo _afferenza non era mai stato settato: questo metodo è stato quindi chiamato dal costruttore
+            pass
+
+        if dipartimento_aff: # sono entrambi not None
+            self._afferenza = _afferenza(impiegato=self, dipartimento=dipartimento_aff, data_afferenza=data_afferenza)
+            dipartimento_aff._add_impiegato(self._afferenza)
+        else: # sono entrambi None
+            self._afferenza = None
+
+    def get_link_afferenza(self) -> _afferenza:
+        return self._afferenza
 
     def nome(self) -> str:
         return self._nome
@@ -34,6 +50,7 @@ class Impiegato:
         self._cognome = cognome
     
     def nascita(self) -> date:
+        return self._nascita
     
     def stipendio(self) -> Importo:
         return self._stipendio
@@ -48,31 +65,38 @@ class Impiegato:
 class Dipartimento:
     _nome: str
     _telefono: Telefono
-    _impiegati: set[_afferenza] # certamente non noti alla nascita
+    _impiegati: [] # certamente non noti alla nascita
 
     def __init__(self, nome: str, telefono: Telefono):
         self.set_nome(nome)
         self.set_telefono(telefono)
 
 
-class afferenza:
-    _impiegato: Impiegato # ovviamente noto alla nascita
-    _dipartimento: Dipartimento # ovviamente noto alla nascita
-    _data_afferenza: datetime.date # noto alla nascita, immutabile
+class _afferenza:
+    _impiegato: Impiegato # ovviamente noto alla nascita e immutabile
+    _dipartimento: Dipartimento # ovviamente noto alla nascita e immutabile
+    _data_afferenza: date # immutabile, noto alla nascita
+
+    def __init__(self, impiegato:Impiegato, dipartimento:Dipartimento, data_afferenza: date) -> None:
+        self._impiegato = impiegato
+        self._dipartimento = dipartimento
+        self._data_afferenza = data_afferenza
 
     def impiegato(self) -> Impiegato:
-        return self.impiegato
-    
+        return self._impiegato
+
     def dipartimento(self) -> Dipartimento:
-        return self.dipartimento
-    
+        return self._dipartimento
+
     def data_afferenza(self) -> date:
-        return self.data_afferenza
-    
-    def __init__(self, impiegato, dipartimento, data_afferenza):
-    
-    def __hash__(self):
-        pass
-    
-    def __eq__(self, value):
-        pass
+        return self._data_afferenza
+
+    def __hash__(self) -> int:
+        return hash((self.impiegato(), self.dipartimento()))
+
+    def __eq__(self, other: Any) -> bool:
+        if type(self) != type(other) \
+            or hash(self) != hash(other):
+            return False
+        return (self.impiegato(), self.dipartimento()) == \
+            (other.impiegato(), other.dipartimento())

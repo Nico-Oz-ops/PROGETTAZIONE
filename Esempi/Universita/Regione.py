@@ -1,4 +1,6 @@
-from Citta import Citta
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from Citta import Citta
 
 class Regione:
     _nome: str
@@ -22,5 +24,5 @@ class Regione:
     def getNome(self) -> str:
         return self._nome
     
-    def getCitta_Reg(self) -> frozenset[Citta]:
+    def getCitta_Reg(self) -> frozenset['Citta']:
         return frozenset(self._citta_reg)

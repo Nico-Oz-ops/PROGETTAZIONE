@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from datetime import date
 from custom_types import *
+
 from typing import *
+
 
 class Impiegato:
     _nome: str # noto alla nascita
@@ -18,10 +20,12 @@ class Impiegato:
         self._nascita = nascita
         self.set_stipendio(stipendio)
         self.set_link_afferenza(dipartimento_aff, data_afferenza)
+        self._progetti = dict()
 
     def set_link_afferenza(self, dipartimento_aff: Dipartimento | None = None, data_afferenza: date | None=None) -> None:
         if (dipartimento_aff is None) != (data_afferenza is None):
             raise ValueError("Dipartimento e data di afferenza devono essere entrambi None o entrambi non None")
+
 
         # Se afferiva a un dipartimento, devo rimuoverlo da esso
         try:
@@ -60,14 +64,12 @@ class Impiegato:
     def set_stipendio(self, stipendio:Importo) -> None:
         self._stipendio = stipendio
 
-    '''def __str__(self) -> str:
-        afferenza: str = f"che afferisce al dip. {self.dipartimento().nome()} dal {self.data_afferenza()}" if self._dipartimento_afferenza else ""
-        return f"Impiegato {self.nome()} {self.cognome()} {afferenza}"'''
 
 class Dipartimento:
     _nome: str # noto alla nascita
     _telefono: Telefono # noto alla nascita
-    _impiegati: _afferenza # da assoc. 'afferenza' [0..*] certamente non noti alla nascita
+
+    _impiegati: set[_afferenza] # da assoc. 'afferenza' [0..*] certamente non noti alla nascita
 
     def __init__(self, nome:str, telefono:Telefono) -> None:
         self.set_nome(nome)
@@ -118,17 +120,22 @@ class _afferenza:
         return hash((self.impiegato(), self.dipartimento()))
 
     def __eq__(self, other: Any) -> bool:
-        if type(self) != type(other) or hash(self) != hash(other):
+        if type(self) != type(other) \
+            or hash(self) != hash(other):
             return False
-        return (self.impiegato(), self.dipartimento()) == (other.impiegato(), other.dipartimento())
+        return (self.impiegato(), self.dipartimento()) == \
+            (other.impiegato(), other.dipartimento())
+
 
 class Progetto:
     _nome: str # noto alla nascita
     _budget: Importo
+    _coinvolti: dict[Impiegato, _imp_prog]  # da assoc. 'imp_prog' [0..*], certamente non noti alla nascita
 
     def __init__(self, nome:str, budget:Importo) -> None:
         self.set_nome(nome)
         self.set_budget(budget)
+        self._coinvolti = dict()
 
     def set_nome(self, nome:str) -> None:
         self._nome = nome
@@ -141,3 +148,100 @@ class Progetto:
 
     def budget(self) -> Importo:
         return self._budget
+
+    def coinvolti(self) -> frozenset[_imp_prog]:
+        return frozenset(self._coinvolti.values())
+
+    def is_coinvolto(self, impiegato: Impiegato) -> bool:
+        return impiegato in self._coinvolti
+
+    def __contains__(self, item: Any) -> bool:
+        if not isinstance(item, Impiegato):
+            return False
+        return self.is_coinvolto(item)
+
+    '''def is_coinvolto_brutto(self, impiegato: Impiegato) -> bool:
+        # Funziona perché abbiamo implementato hash e eq di _imp_prog
+        l: _imp_prog = _imp_prog(self, impiegato, date.today())
+        return l in self._coinvolti'''
+
+    def add_impiegato(self, impiegato:Impiegato, data: date) -> None:
+        if impiegato in self._coinvolti:
+            raise KeyError("Il progetto coinvolge già l'impiegato!")
+        l: _imp_prog = _imp_prog(self, impiegato, data)
+        self._coinvolti[impiegato] = l
+
+    def add_impiegato_oggi(self, impiegato:Impiegato) -> None:
+        self.add_impiegato(impiegato, date.today())
+
+    def remove_impiegato(self, impiegato:Impiegato) -> None:
+        try:
+            del self._coinvolti[impiegato]
+        except KeyError:
+            raise KeyError("Il progetto non coinvolge l'impiegato!")
+
+    def data_coinvolgimento(self, impiegato: Impiegato) -> date:
+        try:
+            return self._coinvolti[impiegato].data()
+        except KeyError:
+            raise KeyError("Il progetto non coinvolge l'impiegato!")
+
+    def ultimo_impiegato_coinvolto(self) -> Impiegato:
+        if not self.coinvolti():
+            raise RuntimeError(f"Il progetto {self.nome()} non ha impiegati coinvolti!")
+
+        date_coinvolgimento: set[date] = set()
+        for l in self._coinvolti.values():
+            date_coinvolgimento.add(l.data())
+        # oppure, usando la list comprehension, date_coinvolgimento = set([l.data() for l in self._coinvolti.values()])
+        ultima_data: date = max(date_coinvolgimento)
+
+        for imp in self._coinvolti:
+            if self.data_coinvolgimento(imp) == ultima_data:
+                return imp
+
+    # alternativa con cui l'IDE non si lamenta del tipo di ritorno
+    def ultimo(self) -> Impiegato:
+        ultimo_imp: Impiegato | None = None
+        ultima_data: date | None = None
+        if not self.coinvolti(): raise RuntimeError()
+
+        for imp, link in self._coinvolti.items():
+            if not ultima_data or link.data() > ultima_data:
+                ultimo_imp = imp
+                ultima_data = link.data()
+
+        return ultimo_imp
+
+        # Non arriverò mai qui, perché esiste sempre un impiegato con l'ultima data
+
+
+class _imp_prog:
+    _progetto: Progetto     # ovviamente immutabile e noto alla nascita
+    _impiegato: Impiegato   # ovviamente immutabile e noto alla nascita
+    _data: date             # immutabile e noto alla nascita
+
+    def __init__(self, progetto: Progetto, impiegato:Impiegato, data:date) -> None:
+        self._progetto = progetto
+        self._impiegato = impiegato
+        self._data = data
+
+    def progetto(self) -> Progetto:
+        return self._progetto
+
+    def impiegato(self) -> Impiegato:
+        return self._impiegato
+
+    def data(self) -> date:
+        return self._data
+
+    def __hash__(self) -> int:
+        return hash((self.progetto(), self.impiegato()))
+
+    def __eq__(self, other: Any) -> bool:
+        if type(self) != type(other) \
+                or hash(self) != hash(other):
+            return False
+        return (self.progetto(), self.impiegato()) == (other.progetto(), other.impiegato())
+        # ignoro la data, perché due link sono lo stesso link se e solo se coinvolgono
+        # la stessa coppia di oggetti, indipendentemente dai valori degli attributi dell'associazione

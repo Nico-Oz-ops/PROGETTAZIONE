@@ -1,23 +1,26 @@
-from Custom_Types import *
-from Studente import *
-from Universita import CorsoDiLaurea
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from Custom_Types import *
+    from Studente import Studente
+    from CorsoDiLaurea import CorsodiLaurea
+    from datetime import datetime
 
-class iscrizione:
+class _iscrizione:
 
     class _link:
-        _studente: Studente 
-        _corsodilaurea: CorsoDiLaurea
+        _studente: 'Studente' 
+        _corsodilaurea: 'CorsodiLaurea'
         _data_iscrizione: datetime.date
 
-        def __init__(self, studente: Studente, corsodilaurea: CorsoDiLaurea, data_iscrizione: datetime.date):
+        def __init__(self, studente: 'Studente', corsodilaurea: 'CorsodiLaurea', data_iscrizione: datetime.date):
             self._studente = studente
             self._corsodilaurea = corsodilaurea
             self._data_iscrizione = data_iscrizione
         
-        def getStudente(self) -> Studente:
+        def getStudente(self) -> 'Studente':
             return self._studente
         
-        def getCorsoDiLaurea(self) -> CorsoDiLaurea:
+        def getCorsoDiLaurea(self) -> 'CorsodiLaurea':
             return self._corsodilaurea
         
         def getDataIscrizione(self) -> datetime.date:

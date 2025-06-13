@@ -1,7 +1,7 @@
 from Custom_Types import *
 from datetime import *
 from Insegnamento import *
-from Universita import Citta
+from Citta import Citta
 
 class Professore:
     _nome: str 
@@ -9,7 +9,7 @@ class Professore:
     _data_nascita: datetime.date #<<imm>>
     _codice_fiscale: CodiceFiscale #<<imm>>
     _prof_insegna_ins: Insegnamento
-    _prof_citta_nasc: Citta
+    _prof_citta_nasc: 'Citta'
 
     def __init__(self, nome: str, cognome: str, data_nascita: datetime.date, codice_fiscale: CodiceFiscale, codice_matricola: IntGEZ, prof_citta_nasc: Citta):
         self.setNome(nome)

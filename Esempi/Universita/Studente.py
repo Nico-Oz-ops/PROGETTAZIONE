@@ -1,6 +1,6 @@
 from Custom_Types import *
 from datetime import *
-from Universita import CorsodiLaurea
+from CorsoDiLaurea import *
 from Insegnamento import *
 from Citta import Citta
 
